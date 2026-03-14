@@ -1,4 +1,4 @@
-package bhav;
+package work;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -224,4 +224,15 @@ public static void loadHolidays() throws SQLException{
 	}
 		return tightcloses;
 }
+	
+	/**
+Update
+  bhav2025pl as c
+  inner join (
+    select symbol, low as prevlow
+    from bhav2025pl as p
+    where mktdate='2025-02-06'
+  ) as a on c.symbol = a.symbol and c.mktdate='2025-02-07'
+set c.prevlow = a.prevlow;**/
+	
 }
