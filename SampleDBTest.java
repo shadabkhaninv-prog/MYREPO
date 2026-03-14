@@ -1,4 +1,4 @@
-package bhav;
+package work;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,9 +30,9 @@ public class SampleDBTest {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			connection =
-		       DriverManager.getConnection("jdbc:mysql://localhost/bhav?" +
-		                                   "user=root&password=root");
-		    
+				       DriverManager.getConnection("jdbc:mysql://localhost/bhav?" +
+				                                   "enabledTLSProtocols=TLSv1.2&useSSL=false&allowPublicKeyRetrieval=true&user=root&password=root");
+				 
 		    System.out.println("Connected !");
 		} catch (Exception ex) {
 		    // handle any errors
@@ -52,15 +52,16 @@ public class SampleDBTest {
 	  java.util.Date currentDay=cal.getTime();	
 	  
 	String startdate=formatter.format(currentDay);	
-	//startdate="2024-02-07";			
-// 	String enddate="2024-12-22";
+	//
+ //startdate="2026-02-01";			
+ 	//String enddate="2026-10-18";
 //	System.err.println(startdate+" -- "+enddate);
 	obj.connect();
 	obj.loadHolidays();	
 	DownloadNSE nse=new DownloadNSE(startdate);	
 //		
 		nse.downloadDeliveryFile();
-obj.processData();	
+		obj.processData();		
 	obj.updatePositivedays();
 	obj.updateMovingAverages(startdate, startdate);
 	obj.loadTrendTemplate(startdate, startdate);
@@ -73,8 +74,8 @@ obj.processData();
 	
 	private void processData() throws SQLException,IOException{
 		
-		Iterator it = FileUtils.iterateFiles(new File("H:/marketdata/test"), null, false);
-		File processedDir=new File("H:/marketdata/processed");
+		Iterator it = FileUtils.iterateFiles(new File("E:/marketdata/test"), null, false);
+		File processedDir=new File("E:/marketdata/processed");
         while(it.hasNext()){
         	File file=(File)it.next();
         	String fileName=file.getName();
@@ -135,7 +136,7 @@ obj.processData();
 	
 	private void updatePositivedays() throws SQLException{
 		
-	      String updatePositivedaysquery = "update bhav2024 set closeindictor=case when close-PREVCLOSE >=0 then 'P' else 'N' end";
+	      String updatePositivedaysquery = "update bhav2026 set closeindictor=case when close-PREVCLOSE >=0 then 'P' else 'N' end";
 	      		System.err.println(updatePositivedaysquery);
 	    		  PreparedStatement pstmt = connection.prepareStatement(updatePositivedaysquery);
                   pstmt.execute();// add batch
@@ -270,7 +271,7 @@ obj.processData();
 		try {
 			selQuery = connection.createStatement();;
  
-  	  String getPrices="select symbol,close from bhav2024 WHERE MKTDATE='"+currentDate+"'";
+  	  String getPrices="select symbol,close from bhav2026 WHERE MKTDATE='"+currentDate+"'";
 			//selQuery.setString(1, prevDay);
 			 rs=selQuery.executeQuery(getPrices);
 			if(!rs.next()) exists=false;
@@ -307,7 +308,7 @@ obj.processData();
       	  
   	    String prevDay=TradeUtil.getPreviousDay(currentDay,connection);  	 
   	 
-  	  String getPrices="select symbol,close from bhav2024 WHERE MKTDATE='"+prevDay+"'";
+  	  String getPrices="select symbol,close from bhav2026 WHERE MKTDATE='"+prevDay+"'";
 			//selQuery.setString(1, prevDay);
 			ResultSet rs=selQuery.executeQuery(getPrices);
 			while (rs.next()){
@@ -340,7 +341,7 @@ obj.processData();
 			
       
 
-              String insertQuery = "Insert into bhav2024 (SYMBOL,MKTDATE,OPEN,HIGH,LOW,CLOSE,VOLUME,PREVCLOSE) values (?,?,?,?,?,?,?,?)";
+              String insertQuery = "Insert into bhav2026 (SYMBOL,MKTDATE,OPEN,HIGH,LOW,CLOSE,VOLUME,PREVCLOSE) values (?,?,?,?,?,?,?,?)";
 connection.setAutoCommit(false);
               pstmt = connection.prepareStatement(insertQuery);
 
@@ -368,10 +369,10 @@ connection.setAutoCommit(false);
             	  if(rowData.length<=1){
             		  break;
             	  }
-                	  symbol=rowData[0];
+                	  symbol=rowData[7];
 //                	  String ticker=rowData[10];
-                	  String series=rowData[1];
-                	  if(!series.equals("EQ")){
+                	  String series=rowData[8];
+                	  if(!(series.equals("EQ")||series.equals("BE"))){
                 		  System.err.println("Ignoring Sreies is "+series);
                 		  continue;
                 	  }
@@ -389,12 +390,13 @@ connection.setAutoCommit(false);
 //                		                 		 noPreviousDay=previousCloses.isEmpty();
 //                	 }
                 	 
-                	  open=rowData[2];
-                	  high=rowData[3];
-                	  low=rowData[4];
-                	  close=rowData[5];
-                	  volume=rowData[8];
-                   	   prevClosePrice=rowData[7];
+                	  open=rowData[14];
+                	  high=rowData[15];
+                	  low=rowData[16];
+                	  close=rowData[17];
+                	  prevClosePrice=rowData[19];
+                	  volume=rowData[24];
+                   	   
 
                 	  if(low.equals("-")){
                 		  low="0";
