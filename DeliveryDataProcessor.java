@@ -1,4 +1,4 @@
-package bhav;
+package work;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,8 +32,8 @@ public class DeliveryDataProcessor {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 			connection =
-		       DriverManager.getConnection("jdbc:mysql://localhost/bhav?" +
-		                                   "user=root&password=root");
+				       DriverManager.getConnection("jdbc:mysql://localhost/bhav?" +
+				                                   "enabledTLSProtocols=TLSv1.2&useSSL=false&allowPublicKeyRetrieval=true&user=root&password=root");
 		    
 		    System.out.println("Connected !");
 		} catch (Exception ex) {
@@ -66,8 +66,8 @@ public class DeliveryDataProcessor {
 	 void processData() throws SQLException,IOException,Exception{
 		 java.util.Date currentDay;
 
-		Iterator it = FileUtils.iterateFiles(new File("H:/deliverydata/test"), null, false);
-		File processedDir=new File("H:/deliverydata/processed");
+		Iterator it = FileUtils.iterateFiles(new File("E:/deliverydata/test"), null, false);
+		File processedDir=new File("E:/deliverydata/processed");
         while(it.hasNext()){
         	File file=(File)it.next();
         	String fileName=file.getName();
