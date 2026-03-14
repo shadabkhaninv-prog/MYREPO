@@ -1,4 +1,4 @@
-package bhav;
+package work;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,8 +31,10 @@ public class DownloadNSE {
 	private void connect() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			connection = DriverManager.getConnection("jdbc:mysql://localhost/bhav?" + "user=root&password=root");
-
+			connection =
+				       DriverManager.getConnection("jdbc:mysql://localhost/bhav?" +
+				                                   "enabledTLSProtocols=TLSv1.2&useSSL=false&allowPublicKeyRetrieval=true&user=root&password=root");
+				 
 			System.out.println("Connected !");
 		} catch (Exception ex) {
 			// handle any errors
@@ -63,6 +65,9 @@ public class DownloadNSE {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat formatter2 = new SimpleDateFormat("ddMMyyyy");
+		
+		SimpleDateFormat formatter3 = new SimpleDateFormat("yyyyMMdd");
+
 
 		// startdate=formatter.format(mom.currentDay);
 
@@ -71,24 +76,39 @@ public class DownloadNSE {
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(currentDay);
-
+		String bhavdate=null;
 		for (int i = 0; i < 1; i++) {
 
 			String endDateString = formatter2.format(cal.getTime());
 			startdate = formatter.format(cal.getTime());
-			System.err.println("Processing Delivery data for " + endDateString);
-			String fileName = "MTO_" + endDateString + ".DAT";
-			String bhavfilename = "/" + endDateString + ".DAT";
+			bhavdate = formatter3.format(cal.getTime());
 
+			
+			System.err.println("Downloading bhavcopy and Delivery data for " + endDateString);
+			String fileName = "MTO_" + endDateString + ".DAT";
+			String bhavcopy = startdate + "-NSE-EQ.txt";
+
+			String bhavfilename = "BhavCopy_NSE_CM_0_0_0_" + bhavdate + "_F_0000.csv.zip";
+// https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20240828_F_0000.csv.zip
 			formatter.format(currentDay);
 			//URL website = new URL("https://www1.nseindia.com/archives/equities/mto/" + fileName);
+			// 2024-08-28-NSE-EQ
+			//javascript:;
 			
 			URL website = new URL("https://archives.nseindia.com/archives/equities/mto/" + fileName);
-			URL bhavwebsite = new URL("https://archives.nseindia.com/content/historical/EQUITIES/" + fileName);
+			URL bhavwebsite = new URL("https://nsearchives.nseindia.com/content/cm/" + bhavfilename);
+			
+		System.err.println("bhavcopy URL " + bhavwebsite);
+		
+		System.err.println("delivery URL " + website);
 
-			// https://archives.nseindia.com/content/historical/EQUITIES/2024/APR/cm17APR2024bhav.csv.zip
+//			try {
+//			FileUtils.copyURLToFile(bhavwebsite, new File("E:\\marketdata\\test\\"),3000,3000);
+//			}catch(Exception e) {
+//				e.printStackTrace();
+//			}
+			FileUtils.copyURLToFile(website, new File("E:\\deliverydata\\test\\" + fileName));
 
-			FileUtils.copyURLToFile(website, new File("H:\\deliverydata\\test\\" + fileName));
 			
 			DeliveryDataProcessor obj=new DeliveryDataProcessor();
 			obj.connect();
@@ -113,9 +133,12 @@ public class DownloadNSE {
 		SimpleDateFormat formatter2 = new SimpleDateFormat("ddMMyyyy");
 
 		// startdate=formatter.format(mom.currentDay);
-
-		mom.currentDay = new java.util.Date(formatter.parse(startdate).getTime());
 		System.err.println(mom.currentDay);
+		System.err.println("Start date is "+startdate);
+
+		
+//		mom.currentDay = new java.util.Date(formatter.parse(startdate).getTime());
+//		System.err.println(mom.currentDay);
 
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(mom.currentDay);
@@ -123,11 +146,13 @@ public class DownloadNSE {
 		for (int i = 0; i < 1; i++) {
 
 			String endDateString = formatter2.format(cal.getTime());
-			startdate = formatter.format(cal.getTime());
+		//	startdate = formatter.format(cal.getTime());
 			System.err.println("Processing Delivery data for " + endDateString);
 			String fileName = "MTO_" + endDateString + ".DAT";
-			String bhavfileName = "MTO_" + endDateString + ".DAT";
+			String bhavfileName = "BhavCopy_NSE_CM_0_0_0_" + endDateString + ".csv.zip";
 
+			//bhav copy download https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_20240827_F_0000.csv.zip
+			
 			formatter.format(mom.currentDay);
 			URL bhavwebsite = new URL("https://archives.nseindia.com/content/historical/EQUITIES/2024/APR/cm24APR2024bhav.csv.zip/" + bhavfileName);
 			URL website = new URL("https://archives.nseindia.com/archives/equities/mto/" + fileName);
